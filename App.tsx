@@ -1,7 +1,6 @@
-import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
 const features = [
   'Your Clothing',
@@ -13,32 +12,33 @@ const features = [
 export default function App() {
   const [selected, setSelected] = useState('Your Clothing');
 
-  const handleSelect = (feature: string) => {
-    setSelected(feature);
-  };
-
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Wardrobe Helper</Text>
-      <Text>Selected: {selected}</Text>
-      <StatusBar style="auto" />
-      <View style={styles.toolbar}>
-        {features.map((feature) => (
-          <Pressable key={feature} onPress={() => handleSelect(feature)}>
-            <Text>{feature}</Text>
-          </Pressable>
-        ))}
-      </View>
-
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right', 'bottom']}>
+        <View style={styles.content}>
+          <Text style={styles.title}>Wardrobe Helper</Text>
+          <Text>Selected: {selected}</Text>
+          <View style={styles.toolbar}>
+            {features.map((feature) => (
+              <Pressable key={feature} onPress={() => setSelected(feature)}>
+                <Text>{feature}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: '#fff'
+  },
+  content: {
+    flex: 1,
+    padding: 16,
   },
   title: {
     fontSize: 24,
