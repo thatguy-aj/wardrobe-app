@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation, ParamListBase } from '@react-navigation/native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,10 +14,53 @@ const features = [
 ];
 
 function HomeScreen() {
+  // Get the navigation object from the context
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
+  // Navigation functions for each feature
+  // Maybe later move these out of the HomePage function and create separate navigation hooks 
+  // so they are universal and we won't have to repeat them in each screen
+  const goToClothing = () => navigation.navigate('Clothing');
+  const goToOutfits = () => navigation.navigate('Outfits');
+  const goToCreateNewOutfit = () => navigation.navigate('Create New Outfit');
+  const goToAIWardrobeHelper = () => navigation.navigate('AI Wardrobe Helper');
+  
   return (
-    <View style={styles.content}>
-      <Text>Home Screen</Text>
-    </View>
+        /**
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right', 'bottom']}>
+        <View style={styles.content}>
+          <Text style={styles.title}>Wardrobe Helper</Text>
+          <Text>Selected: {selected}</Text>
+          <View style={styles.toolbar}>
+            {features.map((feature) => (
+              <Pressable key={feature} onPress={() => setSelected(feature)}>
+                <Text>{feature}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
+    */
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right', 'bottom']}>
+        <View style={styles.toolbar}>
+          <Pressable onPress={goToClothing}>
+            <Text>Clothing</Text>
+          </Pressable>
+          <Pressable onPress={goToOutfits}>
+            <Text>Outfits</Text>
+          </Pressable>
+          <Pressable onPress={goToCreateNewOutfit}>
+            <Text>Create New Outfit</Text>
+          </Pressable>
+          <Pressable onPress={goToAIWardrobeHelper}>
+            <Text>AI Wardrobe Helper</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
@@ -53,6 +96,8 @@ function AIWardrobeHelperScreen() {
   );
 }
 
+// Stack navigator for the main screens
+// Holds all the pages for the main navigation to refeance
 function MyStack() {
   return (
     <Stack.Navigator>
@@ -69,23 +114,6 @@ export default function App() {
   const [selected, setSelected] = useState('Home Screen');
 
   return ( 
-    /**
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.container} edges={['top', 'left', 'right', 'bottom']}>
-        <View style={styles.content}>
-          <Text style={styles.title}>Wardrobe Helper</Text>
-          <Text>Selected: {selected}</Text>
-          <View style={styles.toolbar}>
-            {features.map((feature) => (
-              <Pressable key={feature} onPress={() => setSelected(feature)}>
-                <Text>{feature}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
-    */
     <NavigationContainer>
       <MyStack />
     </NavigationContainer>
