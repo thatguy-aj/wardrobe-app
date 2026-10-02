@@ -24,6 +24,7 @@ function HomeScreen() {
   const goToOutfits = () => navigation.navigate('Outfits');
   const goToCreateNewOutfit = () => navigation.navigate('Create New Outfit');
   const goToAIWardrobeHelper = () => navigation.navigate('AI Wardrobe Helper');
+  const goToSettings = () => navigation.navigate('Settings');
   
   return (
     <SafeAreaProvider>
@@ -40,6 +41,9 @@ function HomeScreen() {
           </Pressable>
           <Pressable onPress={goToAIWardrobeHelper}>
             <Text>AI Wardrobe Helper</Text>
+          </Pressable>
+          <Pressable onPress={goToSettings}>
+            <Text>Settings</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -79,6 +83,14 @@ function AIWardrobeHelperScreen() {
   );
 }
 
+function SettingsScreen() {
+  return (
+    <View style={styles.content}>
+      <Text>Settings Screen</Text>
+    </View>
+  );
+}
+
 // Stack navigator for the main screens
 // Holds all the pages for the main navigation to refeance
 function MyStack() {
@@ -89,6 +101,7 @@ function MyStack() {
       <Stack.Screen name="Outfits" component={OutfitsScreen} />
       <Stack.Screen name="Create New Outfit" component={CreateNewOutfitScreen} />
       <Stack.Screen name="AI Wardrobe Helper" component={AIWardrobeHelperScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
     </Stack.Navigator>
   );
 }
