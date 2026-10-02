@@ -26,23 +26,6 @@ function HomeScreen() {
   const goToAIWardrobeHelper = () => navigation.navigate('AI Wardrobe Helper');
   
   return (
-        /**
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.container} edges={['top', 'left', 'right', 'bottom']}>
-        <View style={styles.content}>
-          <Text style={styles.title}>Wardrobe Helper</Text>
-          <Text>Selected: {selected}</Text>
-          <View style={styles.toolbar}>
-            {features.map((feature) => (
-              <Pressable key={feature} onPress={() => setSelected(feature)}>
-                <Text>{feature}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
-    */
     <SafeAreaProvider>
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right', 'bottom']}>
         <View style={styles.toolbar}>
