@@ -1,10 +1,30 @@
-import { useState } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { themes, Theme } from './theme';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { NavigationContainer, useNavigation, ParamListBase } from '@react-navigation/native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
+
+const ThemeContext = createContext<Theme | undefined>(undefined);
+
+export const useTheme = () => {
+  const theme = useContext(ThemeContext);
+  if (!theme) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return theme;
+};
+
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  const theme = themes.light; // Default to light theme, you can change this or make it dynamic
+  return (
+    <ThemeContext.Provider value={theme}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
 
 const features = [
   'Your Clothing',
