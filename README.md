@@ -101,7 +101,7 @@ EXIT;
 
 **4. Configure the server**
 
-Edit `server/.env` (created by `setup.sh`, or by `cp .env.example .env`) and set:
+Edit `server/.env` (created by `setup.sh`, or by `cp env.example .env`) and set:
 
 ```
 DB_USER=wardrobe
