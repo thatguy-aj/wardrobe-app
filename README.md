@@ -1,5 +1,3 @@
-Project for Software Engineering @ GSU Fall 2026
-
 # Wardrobe Maker
 
 **Software Engineering Project, Georgia State University, Fall 2026 (Team 10)**
@@ -60,73 +58,142 @@ wardrobe-app/
 
 ## How to compile and run
 
-No IDE is needed. Everything runs from a terminal.
+No IDE is needed. Everything runs from a terminal. Pick the section for your operating system, then continue with **Running the mobile app** and **Troubleshooting** below.
 
-### 1. Prerequisites
+### What you need installed
 
-- Node.js 18 or newer (`node -v`)
-- MySQL 8 or MariaDB, installed and running
-- Git
+| | Linux | macOS | Windows |
+|---|---|---|---|
+| Node.js 18+ | `nodejs.org` or your package manager | `brew install node` | LTS installer from `nodejs.org` |
+| MySQL 8 (or MariaDB) | see below | `brew install mysql` | MySQL Installer from `dev.mysql.com` (choose MySQL Server 8.0, optionally Workbench) |
+| Git | package manager | `brew install git` | Git for Windows from `git-scm.com` |
 
-### 2. Get the code
+Check Node with `node -v`. It must print 18 or higher.
+
+### Linux and macOS
+
+**1. Get the code and install dependencies**
 
 ```bash
 git clone https://github.com/thatguy-aj/wardrobe-app.git
 cd wardrobe-app
+bash setup.sh          # installs frontend and backend dependencies, creates server/.env
 ```
 
-### 3. Install dependencies
+Without the script, run `npm install`, then `cd server && npm install && cp .env.example .env`.
 
-Use the build script:
+**2. Start MySQL**
 
-```bash
-bash setup.sh
-```
+- Fedora: `sudo dnf install mariadb-server` then `sudo systemctl enable --now mariadb`
+- Ubuntu or Debian: `sudo apt install mariadb-server` then `sudo systemctl enable --now mariadb`
+- macOS: `brew services start mysql`
 
-Or do it by hand:
+**3. Create a database account**
 
-```bash
-npm install                  # frontend
-cd server && npm install     # backend
-```
-
-### 4. Create a database account
-
-Log in to MySQL as an admin (for example `sudo mysql` on Linux or `mysql -u root -p`) and run:
+Open an admin session with `sudo mysql` (Linux) or `mysql -u root` (macOS, empty root password by default). If your root account has a password, use `mysql -u root -p`. Then run:
 
 ```sql
 CREATE USER 'wardrobe'@'localhost' IDENTIFIED BY 'choose_a_password';
 GRANT ALL PRIVILEGES ON wardrobe_maker.* TO 'wardrobe'@'localhost';
 FLUSH PRIVILEGES;
+EXIT;
 ```
 
-### 5. Configure the server
+**4. Configure the server**
+
+Edit `server/.env` (created by `setup.sh`, or by `cp .env.example .env`) and set:
+
+```
+DB_USER=wardrobe
+DB_PASSWORD=choose_a_password
+```
+
+The `.env` file is ignored by Git and must never be committed.
+
+**5. Create the tables and start the API**
 
 ```bash
 cd server
-cp .env.example .env
+npm run db:setup       # creates the wardrobe_maker database and 8 tables from database/schema.sql
+npm start              # API on http://localhost:3000
 ```
 
-Open `server/.env` and set `DB_USER=wardrobe` and `DB_PASSWORD` to the password you chose. The `.env` file is ignored by Git and must never be committed.
+### Windows
 
-### 6. Create the tables and start the API
+Use **PowerShell** (or Git Bash, where the Linux and macOS commands above also work).
 
-```bash
-npm run db:setup     # creates the wardrobe_maker database and 8 tables from database/schema.sql
-npm start            # API on http://localhost:3000
+**1. Get the code and install dependencies**
+
+```powershell
+git clone https://github.com/thatguy-aj/wardrobe-app.git
+cd wardrobe-app
+npm install
+cd server
+npm install
+copy .env.example .env
 ```
 
-Check it: open http://localhost:3000/api/health. It should show `{"status":"ok"}`.
+`setup.sh` is a bash script, so on Windows either run it from Git Bash or use the commands above.
 
-### 7. Start the mobile app
+**2. Make sure MySQL is running**
 
-In a second terminal, from the repository root:
+The MySQL Installer sets MySQL up as a Windows service that starts automatically. To check, open the Start menu, type `Services`, and look for `MySQL80` with status Running.
+
+**3. Create a database account**
+
+The `mysql` command is usually not on the Windows PATH. Open **MySQL 8.0 Command Line Client** from the Start menu and enter the root password you chose during installation (or use MySQL Workbench and run the statements in a query tab). Then run:
+
+```sql
+CREATE USER 'wardrobe'@'localhost' IDENTIFIED BY 'choose_a_password';
+GRANT ALL PRIVILEGES ON wardrobe_maker.* TO 'wardrobe'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+**4. Configure the server**
+
+Open `server\.env` in Notepad (`notepad .env` from the `server` folder) and set:
+
+```
+DB_USER=wardrobe
+DB_PASSWORD=choose_a_password
+```
+
+Use letters and numbers in the password, because characters such as `#` or quotes can break the `.env` file. Never commit `.env`.
+
+**5. Create the tables and start the API**
+
+```powershell
+npm run db:setup
+npm start
+```
+
+If Windows Firewall asks about Node.js the first time, click **Allow access**. This is needed for a phone to reach the API.
+
+### Check that the API works
+
+On any system, open http://localhost:3000/api/health in a browser. It should show `{"status":"ok"}`.
+
+### Running the mobile app
+
+Leave the API running, open a second terminal in the repository root, and run:
 
 ```bash
 npm start
 ```
 
-Open the app with Expo Go on a phone or with an emulator from the Expo prompt. A phone cannot reach `localhost` on your computer, so when the screens call the API use your computer's local IP address, for example `http://192.168.1.20:3000/api`, with both devices on the same network.
+Open the app with Expo Go on a phone or with an emulator from the Expo prompt. A phone cannot reach `localhost` on your computer, so when the app calls the API use your computer's local IP address as the base URL, for example `http://192.168.1.20:3000/api`, with both devices on the same Wi-Fi network. Find the IP with `hostname -I` (Linux), `ipconfig getifaddr en0` (macOS), or `ipconfig` (Windows, look for IPv4 Address).
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `ECONNREFUSED` during `npm run db:setup` | MySQL is not running. Start it (step 2) and retry. |
+| `Access denied for user` | The `DB_USER` or `DB_PASSWORD` in `server/.env` does not match the account you created. |
+| Windows: `running scripts is disabled on this system` | In PowerShell run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, then retry. |
+| Windows: `mysql` is not recognized | Use MySQL 8.0 Command Line Client or MySQL Workbench instead of the plain terminal. |
+| Port 3000 already in use | Stop the other program, or set `PORT=3001` in `server/.env`. |
+| Phone cannot reach the API | Use the computer's local IP, not `localhost`, and allow Node.js through the firewall. |
 
 ## API reference
 
@@ -145,6 +212,8 @@ All requests and responses are JSON. Protected routes need the header `Authoriza
 
 ### Quick test from the terminal
 
+**Linux, macOS, or Git Bash**
+
 ```bash
 B=http://localhost:3000/api
 H='Content-Type: application/json'
@@ -160,6 +229,26 @@ curl -s "$B/clothing?q=hood" -H "Authorization: Bearer $TOKEN"
 # Log out
 curl -s -X POST $B/auth/logout -H "Authorization: Bearer $TOKEN"
 ```
+
+**Windows PowerShell**
+
+```powershell
+$B = "http://localhost:3000/api"
+
+# Register, then log in and save the token
+Invoke-RestMethod -Method Post -Uri "$B/auth/register" -ContentType "application/json" -Body '{"first_name":"Demo","last_name":"User","email":"demo@example.com","password":"password123"}'
+$login = Invoke-RestMethod -Method Post -Uri "$B/auth/login" -ContentType "application/json" -Body '{"email":"demo@example.com","password":"password123"}'
+$auth = @{ Authorization = "Bearer $($login.token)" }
+
+# Add and search clothing
+Invoke-RestMethod -Method Post -Uri "$B/clothing" -Headers $auth -ContentType "application/json" -Body '{"name":"Blue Hoodie","category":"Tops","color":"blue"}'
+Invoke-RestMethod -Uri "$B/clothing?q=hood" -Headers $auth
+
+# Log out
+Invoke-RestMethod -Method Post -Uri "$B/auth/logout" -Headers $auth
+```
+
+Postman or Thunder Client (VS Code) also work on every system.
 
 ## Database
 
