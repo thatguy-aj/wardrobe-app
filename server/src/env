@@ -1,0 +1,13 @@
+# Database
+DB_HOST=localhost
+DB_PORT=
+DB_USER=wardrobe 
+DB_PASSWORD=WardrobePass123
+
+# External services
+API_KEY=OPENAI_API_KEY=your_actual_api_key
+
+OPENAI_API_KEY=your_secret_api_key
+OPENAI_TEXT_MODEL=gpt-5.5
+OPENAI_IMAGE_MODEL=gpt-image-2.5-sunburst
+PORT=3000
